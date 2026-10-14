@@ -13,7 +13,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | Fechas | ISO 8601 en UTC, con `Z` (`2026-10-14T14:15:00Z`) |
 | Dinero | No hay. El sistema no maneja importes |
 | Autenticación | `Authorization: Bearer <token>` en todo salvo `POST /auth/login` y `GET /health` |
-| Paginación | `?page=1&size=20`. `size` máximo 50. La respuesta es `{ "items": [...], "page": 1, "size": 20, "total": 134 }` |
+| Paginación | `?page=1&size=20`; por defecto `page=1` y `size=20`. `page` debe ser ≥ 1 y `size` debe estar entre 1 y 50; valores fuera de rango o no enteros responden 422 `VALIDATION_ERROR`. La respuesta es `{ "items": [...], "page": 1, "size": 20, "total": 134 }` |
 | Idioma | Mensajes de error en español; campos y códigos en inglés |
 
 ### Cuerpo de error (único para todos los errores)
@@ -57,7 +57,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | `MEMBER_LIMIT_EXCEEDED` | 422 | CA-06.4 |
 | `DUPLICATE_BOOK_IN_LOAN` | 422 | CA-06.2 |
 | `VALIDATION_ERROR` | 422 | Cualquier campo inválido |
-| `INVALID_DATE_RANGE` | 422 | CA-10.2 |
+| `INVALID_DATE_RANGE` | 422 | CA-08.2 y CA-10.2 |
 
 ## 3. Endpoints
 
@@ -102,6 +102,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 |---|---|---|---|
 | GET | `/books` | autenticado | Búsqueda: `q`, `category_id`, `page`, `size` |
 | GET | `/books/{id}` | autenticado | Detalle |
+| GET | `/books/{id}/cover` | autenticado | Devuelve los bytes de la portada con `Content-Type: image/jpeg` o `image/png` |
 | POST | `/books` | admin | Crea |
 | PUT | `/books/{id}` | admin | Reemplaza título, autor, categoría y total |
 | DELETE | `/books/{id}` | admin | Baja lógica |
@@ -119,7 +120,7 @@ Libro (respuesta):
 ```
 
 `POST /books` (petición): `title`, `author`, `isbn`, `category_id`, `total_copies`. Los disponibles los calcula el servidor.
-`cover_key` es una clave opaca: para pintar la portada se usa `GET /books/{id}/cover`, que devuelve el binario o 404.
+`cover_key` es una clave opaca y no se expone como ruta de almacenamiento. `GET /books/{id}/cover` devuelve el binario de la portada; si el libro no existe, está dado de baja o no tiene portada, responde 404 con el cuerpo de error único (`NOT_FOUND`).
 
 ### 3.5 Socios
 
@@ -134,10 +135,12 @@ Libro (respuesta):
 | Método | Ruta | Rol | Descripción |
 |---|---|---|---|
 | POST | `/loans` | admin, librarian | Registra un préstamo |
-| GET | `/loans` | admin, librarian | Lista: `from`, `to`, `status`, `member_id`, `page`, `size` |
+| GET | `/loans` | admin, librarian | Lista: `from`, `to`, `status`, `member_id`, `page`, `size`; fechas UTC inclusivas, `status` admite `open`, `overdue` o `closed`; orden `loaned_at` descendente y `id` ascendente |
 | GET | `/loans/{id}` | admin, librarian | Detalle con líneas y estado |
 | POST | `/loans/{loan_id}/items/{item_id}/return` | admin, librarian | Devuelve una línea |
-| GET | `/loans/overdue` | admin, librarian | Líneas vencidas |
+| GET | `/loans/overdue` | admin, librarian | Líneas vencidas: `page`, `size`; orden `days_late` descendente, `due_at` ascendente e `item_id` ascendente |
+
+En `GET /loans`, `from` y `to` son fechas `YYYY-MM-DD` interpretadas en UTC e inclusivas sobre la fecha UTC de `loaned_at`; ambos parámetros son opcionales. Si se envían ambos y `from > to`, responde 422 `INVALID_DATE_RANGE`. Un `status` distinto de `open`, `overdue` o `closed` responde 422 `VALIDATION_ERROR`.
 
 `POST /loans`
 
@@ -158,14 +161,15 @@ Libro (respuesta):
 
 `POST /loans/{loan_id}/items/{item_id}/return` → 200 con la línea (`returned_at` lleno).
 
-`GET /loans/overdue` → `items`: `{ "loan_id", "item_id", "book_title", "member_name", "due_at", "days_late" }`. Aquí sí se muestra el nombre del
-socio, porque es un listado operativo; **el reporte del §3.7 no**.
+`GET /loans/overdue` → respuesta paginada estándar; cada elemento de `items` es `{ "loan_id", "item_id", "book_title", "member_name", "due_at", "days_late" }`. Se incluyen líneas sin devolver con `due_at` anterior a ahora UTC. `days_late` es el número entero de periodos completos de 24 horas transcurridos desde `due_at` y puede ser 0 durante las primeras 24 horas de vencimiento. Aquí sí se muestra el nombre del socio, porque es un listado operativo; **el reporte del §3.7 no**.
 
 ### 3.7 Reporte
 
 | Método | Ruta | Rol | Descripción |
 |---|---|---|---|
-| GET | `/reports/most-borrowed` | admin | `from` y `to` obligatorios (fecha, ambos inclusive) |
+| GET | `/reports/most-borrowed` | admin | `from` y `to` obligatorios en formato `YYYY-MM-DD`, fechas UTC inclusivas sobre `loaned_at` |
+
+El reporte consulta el intervalo de instantes `loaned_at >= from 00:00:00 UTC` y `loaned_at < (to + 1 día) 00:00:00 UTC`. Si `from > to`, responde 422 `INVALID_DATE_RANGE`.
 
 ```json
 {
@@ -176,7 +180,7 @@ socio, porque es un listado operativo; **el reporte del §3.7 no**.
 }
 ```
 
-Una fila por `book_id + book_title + category_name` congelados. Orden: `times_borrowed` descendente, luego título. Sin socios ni bibliotecarios.
+Una fila por `book_id + book_title + category_name` congelados. Orden: `times_borrowed` descendente, luego título, `book_id` y `category_name` ascendentes para desempatar. Sin socios ni bibliotecarios.
 
 ## 4. Seguridad
 

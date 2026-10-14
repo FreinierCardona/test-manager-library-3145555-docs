@@ -73,15 +73,15 @@ Como usuario quiero autenticarme para operar según mi rol.
 
 ### HU-08 · Ver un préstamo y listar préstamos
 - **CA-08.1** Consultar un préstamo trae sus líneas y su estado calculado (`open`, `overdue`, `closed`).
-- **CA-08.2** Listar por rango de fechas, estado y socio, orden por fecha descendente, paginado.
+- **CA-08.2** Listar por rango inclusivo de fechas UTC de `loaned_at`, estado (`open`, `overdue` o `closed`) y socio; ordenar por `loaned_at` descendente y `id` ascendente como desempate; paginar.
 - **CA-08.3** El estado **se calcula**, no se almacena.
 
 ### HU-09 · Libros vencidos
-- **CA-09.1** Lista las líneas sin devolver con `due_at` anterior a ahora: libro, socio, días de retraso.
-- **CA-09.2** Ordenadas por más días de retraso primero. Solo `admin` y `librarian`.
+- **CA-09.1** Lista las líneas sin devolver con `due_at` anterior a ahora UTC: libro, socio y `days_late`, calculado como el número de periodos completos de 24 horas transcurridos desde `due_at` (puede ser 0 durante las primeras 24 horas de vencimiento).
+- **CA-09.2** Ordenadas por `days_late` descendente, `due_at` ascendente e id de línea ascendente como desempates; paginadas. Solo `admin` y `librarian`.
 
 ### HU-10 · Reporte de libros más prestados
-- **CA-10.1** Dado un rango de fechas, una fila por **libro y nombre de categoría congelado**, con la cantidad de veces prestado, ordenado de mayor a menor.
+- **CA-10.1** Dado un rango inclusivo de fechas UTC de `loaned_at`, una fila por **libro y nombre de categoría congelado**, con la cantidad de veces prestado, ordenado por cantidad descendente, título ascendente, `book_id` ascendente y categoría ascendente.
 - **CA-10.2** Fin anterior al inicio: 422. Rango sin préstamos: lista vacía, no error.
 - **CA-10.3** El reporte **no** se desglosa por bibliotecario ni por socio.
 - **CA-10.4** Un reporte de un periodo cerrado **no cambia** aunque luego se renombre el libro o su categoría.
