@@ -29,19 +29,20 @@ Las flechas de dependencia apuntan **hacia adentro**. `bootstrap` es el único q
 ## 2. Estructura de carpetas
 
 ```text
-src/Library/
-├── domain/              # Book, Loan, LoanItem, Member, User; Isbn, Quantity, DateRange
-├── application/
-│   ├── ports/outbound/  # BookRepository, LoanRepository, MemberRepository, UserRepository,
-│   │                    # CategoryRepository, ReportReader, Clock, PasswordHasher, TokenIssuer, CoverStorage
-│   └── services/        # LendBooksService, ReturnItemService, CreateBookService, SearchBooksService,
-│                        # CreateMemberService, ListMembersService, GetMemberService, ListLoansService,
-│                        # GetLoanService, ListCategoriesService, OverdueService, MostBorrowedReportService,
-│                        # LoginService, CreateLibrarianService
-├── adapters/
-│   ├── inbound/http/    # routers/controladores, esquemas de petición, manejo de errores
-│   └── outbound/        # persistence/, storage/, security/
-└── bootstrap/composition/   # src/Library.Bootstrap/Composition/PortBindings.cs — único punto de composición
+src/
+├── Library.Domain/          # Book, Loan, LoanItem, Member, User; Isbn, Quantity, DateRange
+├── Library.Application/
+│   ├── Ports/Outbound/       # BookRepository, LoanRepository, MemberRepository, UserRepository,
+│   │                        # CategoryRepository, ReportReader, Clock, PasswordHasher, TokenIssuer, CoverStorage
+│   └── Services/            # LendBooksService, ReturnItemService, CreateBookService, SearchBooksService,
+│                            # CreateMemberService, ListMembersService, GetMemberService, ListLoansService,
+│                            # GetLoanService, ListCategoriesService, OverdueService, MostBorrowedReportService,
+│                            # LoginService, CreateLibrarianService
+├── Library.Adapters/
+│   ├── Inbound/Http/         # Endpoints, esquemas de petición y manejo de errores
+│   └── Outbound/             # Persistence/, Storage/, Security/
+└── Library.Bootstrap/
+    └── Composition/PortBindings.cs # Único punto de composición
 ```
 
 ## 3. Agregados
