@@ -8,7 +8,7 @@ Para leer en cinco minutos antes de abrir el resto. El detalle está en [`archit
 flowchart TB
     U["Bibliotecario / Admin"] --> APP["app (React)<br/>frontend"]
     V["Visitante"] --> PAGE["page<br/>sitio público estático"]
-    APP -->|"HTTP /api/v1"| API["api<br/>backend .NET (en el reto: Laravel)"]
+    APP -->|"HTTP /api/v1"| API["api<br/>referencia: .NET<br/>reto: PHP / Laravel"]
     API --> PG[("PostgreSQL 16<br/>esquema library")]
     API --> COV[("Portadas<br/>disco / S3")]
     TOOL["tool<br/>sembrador de demostración"] -->|"usa la API"| API
