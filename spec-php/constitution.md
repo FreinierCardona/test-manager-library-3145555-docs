@@ -38,6 +38,8 @@ Cada artículo incluye cómo se verifica. Una implementación que lo incumpla de
 
 `infra` provisiona PostgreSQL 16 vacío. Todo DDL, incluidas tablas, índices parciales, restricciones y semilla de categorías, vive en `api/database/migrations/`. Las migraciones de Laravel pueden usar `DB::statement()` cuando el schema builder no exprese con claridad un `CHECK` o índice parcial de PostgreSQL.
 
+El esquema de negocio contiene únicamente las seis tablas de [`data-model.md`](data-model.md). No se conservan migraciones starter que creen tablas de autenticación, sesión, caché o colas; la única tabla técnica adicional es `public.migrations`, usada por Laravel para registrar revisiones y fuera del esquema `library`. PostgreSQL usa `DB_SCHEMA=public` como `search_path`; las migraciones y modelos califican explícitamente cada tabla de negocio como `library.<tabla>`. Todos los modelos Eloquent declaran `$timestamps = false`; no se agregan `created_at` ni `updated_at`. El usuario de dominio se mapea a `library."user"`; no se usa el modelo ni la tabla `users` por defecto de Laravel.
+
 **Verificación:** `infra` no contiene `CREATE TABLE`; al migrar una base vacía, las consultas de [`data-model.md`](data-model.md) reflejan exactamente el esquema declarado.
 
 ## Artículo VI — La base protege las invariantes que puede expresar

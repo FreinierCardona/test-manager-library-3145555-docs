@@ -17,7 +17,7 @@ flowchart LR
       APP[Application: casos de uso y puertos]
       DOMAIN[Domain: reglas e invariantes]
       REPO[Adaptadores Eloquent/PostgreSQL]
-      SECURITY[Adaptadores JWT y Argon2id]
+      SECURITY[Adaptadores JWT y Laravel Hash/Argon2id]
       STORAGE[Adaptador Filesystem]
       COMPOSE[LibraryServiceProvider]
       ROUTES --> HTTP --> APP --> DOMAIN
@@ -54,7 +54,7 @@ app/
 │   ├── Inbound/Http/     # Controllers, FormRequests, Resources, middleware y error mapping
 │   └── Outbound/
 │       ├── Persistence/Eloquent/ # Models y repositorios PostgreSQL
-│       ├── Security/     # Argon2id y JWT HS256
+│       ├── Security/     # Laravel Hash Argon2id y JWT HS256
 │       └── Storage/      # Laravel Filesystem
 └── Providers/
     └── LibraryServiceProvider.php
@@ -66,6 +66,8 @@ database/migrations/
  tests/Feature/Http/
  tests/Architecture/
 ```
+
+Los modelos Eloquent especifican `library.<tabla>`, configuran `DB_SCHEMA=public` como `search_path` y declaran `$timestamps = false`. Se omiten las migraciones starter que crean `users`, `sessions`, `cache` o `jobs`; la única tabla técnica adicional es `public.migrations`, fuera del esquema de negocio. `LibraryUserRecord` mapea el usuario de dominio a `library."user"`, sin usar `App\Models\User` ni la tabla `users` convencional.
 
 `LibraryServiceProvider` se registra en `bootstrap/providers.php` y es el único lugar donde se enlazan los puertos a sus adaptadores. Las rutas de Laravel se agrupan con prefijo `v1`, para exponer `/api/v1` sin duplicar el prefijo `/api` que aplica Laravel.
 
@@ -112,7 +114,7 @@ El socio no tiene cuenta ni ruta de login. La interfaz no inventa multas, reserv
 | Reloj | `Clock` | `SystemClock` y reloj fijo de PHPUnit; reloj demo solo en T-26 |
 | Reportes | `ReportReader` | Consulta agregada en PostgreSQL sobre las columnas congeladas |
 | Portadas | `CoverStorage` | Laravel Filesystem; `cover_key` opaca en PostgreSQL |
-| Autenticación | `PasswordHasher`, `TokenIssuer` | `password_hash()` Argon2id y emisión/verificación JWT HS256 |
+| Autenticación | `PasswordHasher`, `TokenIssuer` | Laravel `Hash` con Argon2id y emisión/verificación JWT HS256 |
 | HTTP | DTOs y errores de aplicación | Controllers, `FormRequest`, middleware Bearer/roles y renderer del error común |
 
 Los `FormRequest` validan forma, rango y tipos de entrada; los casos de uso y el dominio son autoridad para reglas de negocio. Las restricciones del motor siguen siendo la última barrera ante concurrencia y escrituras externas.
@@ -160,6 +162,10 @@ Si el último ejemplar ya no está disponible, el caso de uso responde `409 BOOK
 
 React es una SPA separada, servida desde el repo `app`; Laravel solo sirve JSON y bytes de portadas. CORS acepta el origen configurado, no `*`. En despliegues no locales ambas aplicaciones usan HTTPS. No se añade SSR, Blade para la aplicación operativa, una segunda API ni autenticación por cookie/sesión.
 
-## 8. Límites deliberados
+## 8. Arranque e infraestructura
+
+El servicio PostgreSQL vacío puede levantarse por separado para ejecutar migraciones y pruebas de integración antes de terminar ambos aplicativos. El Compose de entrega integra PostgreSQL, API y React en una red privada: espera la salud del motor, ejecuta las migraciones de Laravel, aprovisiona el admin de forma idempotente y luego expone los servicios. `infra` no contiene DDL; no se inicia la API contra un esquema sin migrar.
+
+## 9. Límites deliberados
 
 No hay colas, microservicios, caché, multitenencia, multas, reservas ni renovaciones. Se implementan únicamente cuando una futura especificación los requiera.
