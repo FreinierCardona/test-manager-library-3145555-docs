@@ -3,7 +3,7 @@
 > **Prueba técnica · Ficha ADSO 3145555**
 > Horario: **miércoles 14 de octubre de 2026, de 6:50 a. m. a 11:00 a. m.** (hora Colombia). Entrega a las **11:00 a. m.**
 
-Este repositorio contiene el **spec** de *Manager Library*. Es el único con contenido: los otros cinco empiezan vacíos.
+Este repositorio contiene el **SDD** de *Manager Library* en tres variantes coordinadas: Python, .NET y el stack del reto, PHP/Laravel con React. Las reglas de producto y el contrato son comunes; cada plan y arquitectura traduce esos requisitos a su stack.
 
 ## Instrucciones
 
@@ -11,21 +11,19 @@ Cada aprendiz debe **crear el fork** de los seis repositorios del proyecto y **r
 con el spec planteado**.
 
 1. Hacer fork, a su cuenta de GitHub, de cada repositorio de la tabla del final.
-2. Leer el spec en [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs).
-   Se entrega en dos versiones: `spec-python/` y `spec-.net/`.
+2. Leer la variante apropiada del spec en [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs): `spec-php/` para el reto; `spec-python/` y `spec-.net/` como referencias tecnológicas del mismo producto.
 3. Desarrollar en los forks.
 
 ## El reto se desarrolla con React y PHP (Laravel)
 
-El spec está escrito para Python y para .NET, pero el reto **no** se hace en esos lenguajes:
+El reto se implementa en React y PHP/Laravel. Las variantes Python y .NET son referencias; [`spec-php/`](spec-php/) describe el desarrollo del stack que se entrega:
 
 | Capa | Tecnología del reto |
 |---|---|
 | Frontend | React |
 | Backend | PHP con Laravel |
 
-Lo que el spec define sobre el negocio —historias, criterios de aceptación, reglas, contrato de la
-API, modelo de datos— se respeta. Lo que define sobre la tecnología se traduce a React y Laravel.
+Las tres variantes conservan las mismas historias, criterios de aceptación, reglas, contrato HTTP y modelo de datos. Solo cambian las decisiones de implementación necesarias para cada stack.
 
 ## La prueba no consiste en escribir el código
 
@@ -42,17 +40,17 @@ No hay prórroga: suban avances parciales con commits pequeños durante la prueb
 
 | Carpeta | Contenido |
 |---|---|
-| [`spec-python/`](spec-python/) | El spec de Manager Library escrito para un backend Python |
-| [`spec-.net/`](spec-.net/) | El mismo sistema especificado para un backend .NET |
+| [`spec-php/`](spec-php/) | SDD para el stack del reto: API PHP/Laravel y SPA React |
+| [`spec-python/`](spec-python/) | El mismo producto como referencia de implementación Python |
+| [`spec-.net/`](spec-.net/) | El mismo producto como referencia de implementación .NET |
 
-Las dos versiones describen el **mismo producto** (las mismas historias, reglas de negocio y
-endpoints); cambian las decisiones de tecnología. Ninguna de las dos es el stack del reto.
+Las tres versiones describen el **mismo producto** (las mismas historias, reglas de negocio, modelo y endpoints). `spec-php/` es el destino del reto; Python y .NET sirven como referencias comparativas.
 
 ### Paridad entre variantes
 
-`spec.md`, `data-model.md`, `api-contract.md` y los cuatro ADR deben conservar el mismo contenido en ambas carpetas. Las reglas funcionales y la evidencia de comportamiento de `tasks.md` también deben coincidir; solo pueden variar los comandos, frameworks y herramientas específicos de cada stack. `constitution.md`, `plan.md` y los documentos de arquitectura pueden diferir en decisiones técnicas, rutas de proyecto y herramientas de verificación, pero no en garantías de negocio ni en el contrato compartido.
+`spec.md`, `data-model.md`, `api-contract.md` y los cuatro ADR deben conservar el mismo contenido en las tres carpetas. Las tareas deben cubrir los mismos criterios y flujos funcionales, aunque su descomposición, comandos y evidencia técnica pueden adaptarse al stack. `constitution.md`, `plan.md` y los documentos de arquitectura pueden diferir en rutas de proyecto, framework y herramientas de verificación, pero no en garantías de negocio ni en el contrato compartido.
 
-Todo cambio que afecte al producto o al contrato se aplica a `spec-python/` y `spec-.net/` en el mismo cambio y se revisa en paralelo. Las diferencias restantes deben explicarse por tecnología. No se mantiene una tercera copia de requisitos o endpoints: estos documentos continúan siendo las fuentes de verdad.
+Todo cambio que afecte al producto o al contrato se aplica a las tres variantes en el mismo cambio y se revisa en paralelo. Las diferencias restantes deben explicarse por tecnología. No se crea un artefacto adicional que duplique requisitos o endpoints: los documentos compartidos de cada variante siguen siendo las fuentes de verdad.
 
 ### Glosario breve
 
@@ -68,7 +66,7 @@ Todo cambio que afecte al producto o al contrato se aplica a `spec-python/` y `s
 
 ## Cómo se lee el spec
 
-En cualquiera de las dos carpetas, en este orden:
+En cualquiera de las tres carpetas, en este orden:
 
 1. `constitution.md` — principios innegociables.
 2. `spec.md` — qué debe hacer el sistema: actores, historias, criterios de aceptación, reglas de negocio.
@@ -81,7 +79,7 @@ En cualquiera de las dos carpetas, en este orden:
 
 | Repositorio | Qué va ahí |
 |---|---|
-| [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs) | El spec: `spec-python/` y `spec-.net/` |
+| [`test-manager-library-3145555-docs`](https://github.com/code-sena/test-manager-library-3145555-docs) | El SDD: `spec-php/`, `spec-python/` y `spec-.net/` |
 | [`test-manager-library-3145555-api`](https://github.com/code-sena/test-manager-library-3145555-api) | Backend en PHP (Laravel) |
 | [`test-manager-library-3145555-app`](https://github.com/code-sena/test-manager-library-3145555-app) | Frontend en React |
 | [`test-manager-library-3145555-page`](https://github.com/code-sena/test-manager-library-3145555-page) | Sitio público estático de presentación |
