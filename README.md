@@ -54,6 +54,18 @@ endpoints); cambian las decisiones de tecnología. Ninguna de las dos es el stac
 
 Todo cambio que afecte al producto o al contrato se aplica a `spec-python/` y `spec-.net/` en el mismo cambio y se revisa en paralelo. Las diferencias restantes deben explicarse por tecnología. No se mantiene una tercera copia de requisitos o endpoints: estos documentos continúan siendo las fuentes de verdad.
 
+### Glosario breve
+
+| Término | Significado en estos documentos |
+|---|---|
+| DDL | Instrucciones SQL que crean o modifican el esquema de la base de datos |
+| FK | Clave foránea que relaciona una fila con otra tabla |
+| ORM | Herramienta que mapea objetos del programa a tablas y consultas de base de datos |
+| JWT / HS256 | Token con claims firmado mediante HMAC-SHA-256; su contenido no está cifrado |
+| CORS | Política del navegador que limita qué orígenes pueden llamar a la API |
+| UTC | Referencia horaria común usada para almacenar y comparar instantes |
+| Fake | Sustituto controlado de una dependencia externa para ejecutar pruebas sin ese servicio real |
+
 ## Cómo se lee el spec
 
 En cualquiera de las dos carpetas, en este orden:
