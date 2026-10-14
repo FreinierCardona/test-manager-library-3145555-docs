@@ -48,6 +48,12 @@ No hay prórroga: suban avances parciales con commits pequeños durante la prueb
 Las dos versiones describen el **mismo producto** (las mismas historias, reglas de negocio y
 endpoints); cambian las decisiones de tecnología. Ninguna de las dos es el stack del reto.
 
+### Paridad entre variantes
+
+`spec.md`, `data-model.md`, `api-contract.md` y los cuatro ADR deben conservar el mismo contenido en ambas carpetas. Las reglas funcionales y la evidencia de comportamiento de `tasks.md` también deben coincidir; solo pueden variar los comandos, frameworks y herramientas específicos de cada stack. `constitution.md`, `plan.md` y los documentos de arquitectura pueden diferir en decisiones técnicas, rutas de proyecto y herramientas de verificación, pero no en garantías de negocio ni en el contrato compartido.
+
+Todo cambio que afecte al producto o al contrato se aplica a `spec-python/` y `spec-.net/` en el mismo cambio y se revisa en paralelo. Las diferencias restantes deben explicarse por tecnología. No se mantiene una tercera copia de requisitos o endpoints: estos documentos continúan siendo las fuentes de verdad.
+
 ## Cómo se lee el spec
 
 En cualquiera de las dos carpetas, en este orden:
