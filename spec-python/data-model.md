@@ -81,7 +81,7 @@ Ninguna columna lleva `DEFAULT`: los valores los pone la aplicación; `inventory
 |---|---|---|---|
 | `id` | `uuid` | no | PK |
 | `full_name` | `varchar(200)` | no | |
-| `document_number` | `varchar(30)` | no | Único |
+| `document_number` | `varchar(30)` | no | Obligatorio, no vacío y sin U+0020 en los extremos; el dominio lo recorta y `ck_member_document_number_trimmed` lo garantiza. Es único con comparación sensible a mayúsculas. Texto opaco: no se valida formato nacional ni se alteran caso, puntuación o ceros iniciales |
 
 **`loan`**
 
@@ -124,6 +124,7 @@ porque ningún requisito las pide.
 | Claves primarias de las seis tablas | `PK_*` | **motor** |
 | `category.name` único | índice único | **motor** |
 | `member.document_number` único | índice único | **motor** |
+| `member.document_number` no vacío y sin espacios exteriores | `ck_member_document_number_trimmed` | **motor** |
 | `user.username` único | índice único | **motor** |
 | `isbn` único entre activos | índice único parcial `WHERE deleted_at IS NULL` | **motor** |
 | `book.category_id` → `category.id` RESTRICT | FK | **motor** |

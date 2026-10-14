@@ -130,6 +130,8 @@ Libro (respuesta):
 | GET | `/members/{id}` | admin, librarian | Detalle con `active_loans` (conteo sin devolver) |
 | POST | `/members` | admin, librarian | Crea: `full_name`, `document_number` |
 
+`document_number` es obligatorio; se recorta el espacio ASCII U+0020 de los extremos y debe quedar entre 1 y 30 caracteres. Se conserva como texto opaco, incluidos caso, puntuación y ceros iniciales; no se aplica validación de formato nacional. La unicidad se evalúa con comparación sensible a mayúsculas sobre el valor recortado; repetido: 409 `DOCUMENT_TAKEN`.
+
 ### 3.6 Préstamos
 
 | Método | Ruta | Rol | Descripción |

@@ -33,9 +33,11 @@ src/Library/
 ├── domain/              # Book, Loan, LoanItem, Member, User; Isbn, Quantity, DateRange
 ├── application/
 │   ├── ports/outbound/  # BookRepository, LoanRepository, MemberRepository, UserRepository,
-│   │                    # ReportReader, Clock, PasswordHasher, TokenIssuer, CoverStorage
+│   │                    # CategoryRepository, ReportReader, Clock, PasswordHasher, TokenIssuer, CoverStorage
 │   └── services/        # LendBooksService, ReturnItemService, CreateBookService, SearchBooksService,
-│                        # OverdueService, MostBorrowedReportService, LoginService, CreateLibrarianService
+│                        # CreateMemberService, ListMembersService, GetMemberService, ListLoansService,
+│                        # GetLoanService, ListCategoriesService, OverdueService, MostBorrowedReportService,
+│                        # LoginService, CreateLibrarianService
 ├── adapters/
 │   ├── inbound/http/    # routers/controladores, esquemas de petición, manejo de errores
 │   └── outbound/        # persistence/, storage/, security/
@@ -48,7 +50,7 @@ src/Library/
 |---|---|---|
 | `Book` | `Isbn`, copias totales y disponibles, baja lógica | disponibles entre 0 y total; total ≥ 1; título no vacío |
 | `Loan` | colección de `LoanItem` | 1 a 3 líneas; sin libro repetido; vencimiento a 14 días; inmutable salvo devolución |
-| `Member` | documento | documento obligatorio y único |
+| `Member` | `document_number` | texto obligatorio de 1 a 30 caracteres tras recortar U+0020 exterior; opaco, sin formato nacional, único tras normalizar |
 | `User` | rol, hash | nombre normalizado; rol en (`admin`, `librarian`) |
 
 `Loan.AddItem` llama a `Book.Withdraw` antes de añadir la línea: descontar el ejemplar y crear la línea son **una sola operación**.

@@ -52,7 +52,7 @@ Como usuario quiero autenticarme para operar según mi rol.
 - **CA-04.3** Consultar un libro por id inexistente o dado de baja: 404.
 
 ### HU-05 · Gestionar socios
-- **CA-05.1** El admin y el bibliotecario crean socios con nombre y documento. El documento es único: repetido 409.
+- **CA-05.1** El admin y el bibliotecario crean socios con nombre y documento. `document_number` es obligatorio: se recorta el espacio ASCII U+0020 de los extremos, debe quedar entre 1 y 30 caracteres, se conserva el resto del texto sin validación de formato nacional y es único después del recorte con comparación sensible a mayúsculas; repetido: 409.
 - **CA-05.2** Se lista y se busca por nombre o documento, paginado.
 - **CA-05.3** Los socios no se eliminan.
 

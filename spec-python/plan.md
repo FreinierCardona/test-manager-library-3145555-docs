@@ -11,9 +11,9 @@ Cómo se construye lo que dicen [`spec.md`](spec.md) y [`constitution.md`](const
 | D-02 | Framework HTTP | FastAPI | Contrato en [`api-contract.md`](api-contract.md) |
 | D-03 | Persistencia | SQLAlchemy 2 + Alembic sobre PostgreSQL 16 | El esquema es de las migraciones (ADR-001) |
 | D-04 | Concurrencia | `book.inventory_version` con actualización optimista del inventario + `CHECK` de rango ([ADR-002](adr/adr-002-concurrencia-optimista.md)) | Último ejemplar (RNF-2) |
-| D-05 | Fechas | Instantes UTC (`timestamptz`); el reloj es un puerto (`Clock`) | Probar vencimientos sin esperar 14 días |
+| D-05 | Fechas | Instantes UTC (`timestamptz`); `Clock` es un puerto, con reloj controlado solo en pruebas y perfil demo aislado | Probar vencimientos sin backdating en la API normal |
 | D-06 | Reporte | Una consulta agregada por un puerto de lectura ([ADR-004](adr/adr-004-reporte-agregado-y-congelado.md)) | Estable y barato |
-| D-07 | Objetos de valor | `Isbn`, `Quantity`, `DocumentNumber`, `DateRange`: viven dentro de la fila de su dueño, sin tabla | No tienen identidad |
+| D-07 | Objetos de valor | `Isbn`, `Quantity`, `DateRange`: viven dentro de la fila de su dueño, sin tabla | `document_number` es texto opaco, no un objeto de valor |
 | D-08 | Portadas | Binario en almacenamiento externo (disco en local, S3 en producción); la base guarda solo `cover_key` | Clave opaca, nunca ruta |
 | D-09 | Contraseñas | Argon2id detrás del puerto `PasswordHasher`; el dominio nunca ve la clave en claro | Artículo IX |
 | D-10 | Arranque | La aplicación crea el admin inicial desde `ADMIN_USERNAME` / `ADMIN_PASSWORD` | La base no puede producir el hash |
@@ -29,6 +29,7 @@ Cómo se construye lo que dicen [`spec.md`](spec.md) y [`constitution.md`](const
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | sí | definidos en `.env`, nunca en el repo |
 | `COVERS_DIR` | no | `./var/covers` |
 | `CORS_ORIGIN` | sí | `http://localhost:5173` |
+| `DEMO_CLOCK_ENABLED` | no | `false`; solo `true` en el perfil demo aislado; el arranque de producción debe rechazar `true` |
 
 ## 3. Estrategia de pruebas
 
