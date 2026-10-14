@@ -70,9 +70,12 @@ sequenceDiagram
     S->>S: ¿tiene vencidos? ¿supera 3?
     S->>B: obtener libros por lote (Q3)
     S->>S: Loan.AddItem → Book.Withdraw (por cada libro)
-    S->>L: guardar préstamo + libros (una transacción)
-    L-->>S: ok o conflicto de versión
-    S-->>H: préstamo o BOOK_NOT_AVAILABLE
+    S->>B: descontar inventario con inventory_version esperado
+    B-->>S: ok o conflicto optimista
+    S->>S: releer y reintentar una vez si cambió la versión
+    S->>L: guardar préstamo + líneas (misma transacción)
+    L-->>S: ok o rollback
+    S-->>H: préstamo, BOOK_NOT_AVAILABLE o BOOK_CONCURRENTLY_MODIFIED
     H-->>C: 201 o 409
 ```
 

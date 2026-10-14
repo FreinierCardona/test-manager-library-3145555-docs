@@ -51,7 +51,7 @@ Seis entidades, seis tablas. No hay tabla de reporte, de multas ni de auditoría
 
 ## 3. Modelo físico
 
-Ninguna columna lleva `DEFAULT`: los valores los pone el dominio.
+Ninguna columna lleva `DEFAULT`: los valores los pone la aplicación; `inventory_version` lo administra el adaptador de persistencia.
 
 **`category`** — semilla de solo lectura.
 
@@ -71,6 +71,7 @@ Ninguna columna lleva `DEFAULT`: los valores los pone el dominio.
 | `category_id` | `uuid` | no | FK restrictiva a `category` |
 | `total_copies` | `integer` | no | ≥ 1 |
 | `available_copies` | `integer` | no | Entre 0 y `total_copies` |
+| `inventory_version` | `bigint` | no | Token de concurrencia optimista del inventario; inicia en 1 y aumenta en cada cambio de existencias |
 | `cover_key` | `varchar(512)` | **sí** | Clave opaca; nunca ruta ni bytes; nunca cadena vacía |
 | `deleted_at` | `timestamptz` | sí | Baja lógica. Nula = activo |
 
@@ -131,14 +132,17 @@ porque ningún requisito las pide.
 | `loan_item.loan_id` → `loan.id` CASCADE | FK | **motor** |
 | `loan_item.book_id` → `book.id` RESTRICT | FK | **motor** |
 | `0 <= available_copies <= total_copies` | `ck_book_available_range` | **motor** — última barrera de concurrencia |
+| `inventory_version >= 1` | `ck_book_inventory_version_positive` | **motor** |
 | `total_copies >= 1` | `ck_book_total_positive` | **pendiente (T-18)** · hoy solo dominio |
 | Único `(loan_id, book_id)` | índice único | **motor** |
 | `role` en (`admin`,`librarian`) | `ck_user_role` | **pendiente (T-18)** · hoy solo dominio |
 | Máximo 3 sin devolver por socio | — | **solo dominio** (no expresable en un `CHECK`) |
 | Socio con vencidos no pide | — | **solo dominio** |
-| Descontar ejemplar y crear línea son una operación | — | **solo dominio** (una transacción) |
+| Descontar ejemplar y crear línea son una operación | — | **solo dominio** (la aplicación coordina la transacción; concurrencia de inventario definida debajo) |
 | Un préstamo tiene 1 a 3 líneas | — | **solo dominio** |
 | Préstamos y devoluciones inmutables salvo `returned_at` | — | **solo dominio** (por ausencia de operación) |
+
+Toda mutación de `total_copies` o `available_copies` actualiza la fila condicionando por `id` y el `inventory_version` leído, y aumenta el token en la misma escritura (`inventory_version = inventory_version + 1`). Si ninguna fila coincide, el adaptador vuelve a leer el libro y reintenta una vez dentro de la transacción; el préstamo y todas sus líneas se confirman junto con los descuentos de inventario o se revierten juntos. La respuesta ante el conflicto se define en [`api-contract.md`](api-contract.md) y [`ADR-002`](adr/adr-002-concurrencia-optimista.md).
 
 Índices de acceso: `book (category_id, title)` parcial sobre activos; `loan (loaned_at)`; `loan_item (book_id)`;
 `loan_item (due_at) WHERE returned_at IS NULL` para vencidos.

@@ -36,7 +36,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | 401 | Sin token, token inválido o vencido, credenciales inválidas |
 | 403 | Rol insuficiente |
 | 404 | No existe (o está dado de baja) |
-| 409 | Conflicto de estado: duplicado, sin ejemplares, ya devuelto, socio con vencidos, libro con préstamos abiertos |
+| 409 | Conflicto de estado: duplicado, sin ejemplares, inventario modificado concurrentemente, ya devuelto, socio con vencidos, libro con préstamos abiertos |
 | 422 | Validación: campo inválido, regla de entrada rota, rango de fechas invertido |
 
 ## 2. Códigos de error de negocio
@@ -51,6 +51,7 @@ implemente en Python o .NET. Qué hace cada operación está en [`spec.md`](spec
 | `DOCUMENT_TAKEN` | 409 | CA-05.1 |
 | `BOOK_HAS_OPEN_LOANS` | 409 | CA-03.5 |
 | `BOOK_NOT_AVAILABLE` | 409 | CA-06.3 |
+| `BOOK_CONCURRENTLY_MODIFIED` | 409 | La versión del inventario cambió dos veces durante el reintento de una mutación |
 | `MEMBER_HAS_OVERDUE` | 409 | CA-06.5 |
 | `ITEM_ALREADY_RETURNED` | 409 | CA-07.2 |
 | `MEMBER_LIMIT_EXCEEDED` | 422 | CA-06.4 |
