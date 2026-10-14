@@ -104,6 +104,6 @@ Como usuario quiero autenticarme para operar según mi rol.
 |---|---|---|
 | RNF-1 | La búsqueda de libros responde en menos de 300 ms con 5 000 libros | Prueba de carga con el sembrador de `tool` |
 | RNF-2 | Dos bibliotecarios prestando el **último ejemplar** a la vez: uno gana, el otro recibe 409 | Prueba concurrente |
-| RNF-3 | La contraseña nunca viaja ni se guarda en claro; nunca aparece en logs | Revisión de logs y de respuestas |
+| RNF-3 | La contraseña solo se acepta en el cuerpo de `POST /auth/login` y `POST /users`; fuera del entorno local esos endpoints usan HTTPS/TLS. Nunca se almacena en claro ni aparece en logs o respuestas | Prueba de persistencia, revisión de logs/respuestas y verificación HTTPS del despliegue no local |
 | RNF-4 | Todo error HTTP usa el mismo cuerpo (ver contrato) | Prueba de contrato |
 | RNF-5 | El sistema levanta con un solo comando y la base arranca vacía | `README` de `infra` |

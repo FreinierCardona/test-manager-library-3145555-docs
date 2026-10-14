@@ -58,8 +58,8 @@ La línea de préstamo guarda título, ISBN y categoría del instante del prést
 
 ## Artículo IX — Ningún secreto entra al repositorio ni a un log
 
-Ni contraseñas, ni hashes precalculados, ni la clave del token. Todo secreto viene del entorno. El `.env` real está en `.gitignore`; solo se versiona `.env.example`.
-**Verificación:** `gitleaks` o un `grep` de patrones en CI; ninguna respuesta HTTP incluye `password` ni `password_hash`.
+Las credenciales del administrador inicial y la clave del token vienen del entorno. Las contraseñas solo se aceptan en el cuerpo de `POST /auth/login` y `POST /users`; fuera del entorno local, esos endpoints se exponen exclusivamente por HTTPS/TLS. Ninguna contraseña se almacena en claro ni aparece en logs o respuestas; solo se persiste su hash. El `.env` real está en `.gitignore`; solo se versiona `.env.example`.
+**Verificación:** `gitleaks` o un `grep` de patrones en CI; pruebas que confirman que la contraseña no queda en la base en claro, no aparece en logs ni respuestas, y el despliegue no local expone esos endpoints solo por HTTPS.
 
 ## Artículo X — Gana el motor
 
